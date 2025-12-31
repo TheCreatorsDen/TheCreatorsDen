@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,7 @@
     <title>Creator's Den Leaderboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <script>
@@ -18,19 +18,26 @@
                         teko: ['Teko', 'sans-serif'],
                         poppins: ['Poppins', 'sans-serif'],
                     },
+                    colors: {
+                        brandBlue: '#00AEEF',
+                        brandRed: '#ED1C24',
+                        brandYellow: '#FFC20E',
+                        brandGreen: '#00ff84', 
+                        darkBase: '#0b0d17', 
+                        cardSolid: '#15192b',
+                    },
                     animation: {
-                        'shimmer': 'shimmer 1.5s infinite linear',
-                        'float': 'float 4s ease-in-out infinite',
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'slide-in': 'slideIn 0.4s ease-out forwards',
                     },
                     keyframes: {
-                        shimmer: {
-                            '0%': { backgroundPosition: '-1000px 0' },
-                            '100%': { backgroundPosition: '1000px 0' }
-                        },
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
                             '50%': { transform: 'translateY(-10px)' },
+                        },
+                        slideIn: {
+                            '0%': { opacity: '0', transform: 'translateX(-10px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
                         }
                     }
                 }
@@ -39,189 +46,188 @@
     </script>
 
     <style>
-        body { transition: background-color 0.5s ease, color 0.5s ease; cursor: default; }
-        
-        #cursor-glow {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;
-            background: radial-gradient(800px circle at var(--x, 50%) var(--y, 50%), rgba(255, 255, 255, 0.15), transparent 40%);
-            opacity: 0; transition: opacity 0.3s; mix-blend-mode: overlay;
-        }
-        @media (hover: hover) { #cursor-glow { opacity: 1; } }
-
-        #video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
-        #video-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
-        .bg-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at center, rgba(24, 19, 71, 0.7) 0%, rgba(10, 10, 20, 0.98) 100%); z-index: 1; transition: opacity 0.5s; }
-        .light-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at center, rgba(240, 244, 255, 0.8) 0%, rgba(220, 230, 240, 0.98) 100%); z-index: 2; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
-        body.light .light-overlay { opacity: 1; }
-        body.light .bg-overlay { opacity: 0; }
-        
-        .leaderboard-panel { background: rgba(20, 20, 40, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 20px; backdrop-filter: blur(12px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); transition: all 0.3s ease; }
-        body.light .leaderboard-panel { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.05); box-shadow: 0 20px 50px rgba(0,0,0,0.1); color: #1a202c; }
-        
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
-        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
-        body.light .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); }
-        
-        .skeleton-bg {
-            background: linear-gradient(to right, rgba(255,255,255,0.05) 8%, rgba(255,255,255,0.1) 18%, rgba(255,255,255,0.05) 33%);
-            background-size: 1000px 100%; animation: shimmer 1.5s infinite linear;
-        }
-        body.light .skeleton-bg {
-            background: linear-gradient(to right, rgba(0,0,0,0.05) 8%, rgba(0,0,0,0.1) 18%, rgba(0,0,0,0.05) 33%);
-            background-size: 1000px 100%;
+        body { 
+            background-color: #0b0d17;
+            color: white;
+            cursor: default; 
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+            height: 100dvh; 
         }
 
-        .player-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .player-card:hover { transform: scale(1.02) translateX(5px); box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); border-color: rgba(59, 130, 246, 0.5); z-index: 10; }
+        /* --- Scrollbar --- */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #0f111a; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #00AEEF; }
+
+        /* --- PROFESSIONAL LIST CARD --- */
+        .pro-card {
+            background: linear-gradient(145deg, #15192b, #111420);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #334155;
+            border-radius: 12px;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            align-items: center;
+            padding: 10px 12px; 
+            gap: 12px;
+        }
+
+        .pro-card:hover {
+            transform: translateX(4px);
+            background: linear-gradient(145deg, #1e262f, #161b2e);
+            border-left-color: #00ff84; 
+            box-shadow: 0 4px 20px rgba(0, 255, 132, 0.1);
+        }
+
+        /* Rank Colors */
+        .rank-1-border { border-left-color: #FFC20E; }
+        .rank-2-border { border-left-color: #ED1C24; }
+        .rank-3-border { border-left-color: #00AEEF; }
+
+        /* Modal Transitions */
+        #profile-modal { transition: opacity 0.2s ease, visibility 0.2s ease; }
+        #profile-modal.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        #modal-content { transform: scale(0.95); transition: transform 0.2s ease; }
+        #profile-modal:not(.hidden) #modal-content { transform: scale(1); }
     </style>
 </head>
-<body class="font-poppins text-white min-h-screen flex flex-col overflow-x-hidden">
+<body class="h-screen w-screen overflow-hidden flex flex-col bg-[#0a0e17] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1a2035] via-[#0a0e17] to-[#0a0e17]">
 
-    <div id="cursor-glow"></div>
+    <canvas id="global-confetti-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-[50]"></canvas>
+    <canvas id="winner-confetti-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-[10001] hidden"></canvas>
 
-    <button onclick="toggleTheme()" class="fixed top-4 right-4 z-50 bg-black/30 hover:bg-black/50 backdrop-blur-md border border-white/20 rounded-full p-3 transition-all duration-300 shadow-xl group hover:rotate-12">
-        <i class="fas fa-sun text-yellow-400 text-xl hidden group-[.light_&]:block"></i>
-        <i class="fas fa-moon text-blue-200 text-xl block group-[.light_&]:hidden"></i>
-    </button>
-
-    <div id="video-container">
-        <video autoplay muted loop playsinline id="video-bg">
-            <source src="https://static.videezy.com/system/resources/previews/000/051/915/original/Blue_Abstract_Background.mp4" type="video/mp4">
-        </video>
-        <div class="bg-overlay"></div>
-        <div class="light-overlay"></div>
-    </div>
-
-    <header class="w-full p-4 text-center z-10 mt-4 mb-4 animate-[fadeIn_1s_ease-out] relative">
-        <div class="flex flex-col items-center justify-center gap-1">
-            <h2 class="text-2xl md:text-3xl font-bold text-blue-200 dark:text-blue-200 text-blue-800 transition-colors tracking-[0.2em] uppercase drop-shadow-md body-light:text-blue-900 hover:tracking-[0.3em] duration-500 cursor-default">
-                THE CREATOR'S DEN
-            </h2>
-            <div class="flex items-center justify-center gap-3 md:gap-5 transform relative mt-2 group cursor-pointer" onclick="fireConfetti()">
-                <h1 class="text-5xl md:text-8xl font-teko font-bold text-transparent bg-clip-text bg-gradient-to-b from-[#ffe066] to-[#ffcc00] uppercase tracking-wider drop-shadow-2xl leading-none pt-2 group-hover:scale-105 transition duration-500" style="filter: drop-shadow(0 0 10px rgba(255, 204, 0, 0.5));">
+    <!-- Header -->
+    <header class="w-full py-3 md:py-6 text-center z-10 shrink-0">
+        <div class="flex flex-col items-center justify-center gap-0">
+            <div class="flex items-center gap-2 text-xs md:text-base font-bold tracking-[0.3em] uppercase drop-shadow-md">
+                <span class="text-brandRed">THE</span>
+                <span class="text-brandBlue">CREATOR'S</span>
+                <span class="text-brandYellow">DEN</span>
+            </div>
+            
+            <div class="flex items-center justify-center gap-2 md:gap-3 mt-1 cursor-pointer group" onclick="fireGlobalConfetti()">
+                <h1 class="text-5xl md:text-7xl font-teko font-bold text-white uppercase tracking-wide leading-none pt-1 drop-shadow-2xl">
                     LEADERBOARD
                 </h1>
-                <i class="fas fa-trophy text-4xl md:text-6xl text-[#ffcc00] drop-shadow-lg animate-pulse-slow mb-1 group-hover:rotate-12 transition duration-500"></i>
+                <i class="fas fa-trophy text-3xl md:text-5xl text-brandYellow animate-float mb-1 group-hover:rotate-12 transition-transform"></i>
             </div>
-            <p class="text-[10px] text-gray-400 mt-2">(Click the Title for Confetti!)</p>
         </div>
     </header>
 
-    <main class="flex-grow container mx-auto px-4 flex flex-col md:flex-row items-start md:items-center justify-center gap-8 md:gap-12 z-10 pb-10">
+    <!-- Main Content -->
+    <main class="flex-1 min-h-0 container mx-auto px-2 md:px-4 flex flex-col md:flex-row items-stretch justify-center gap-4 md:gap-8 pb-2 max-w-7xl">
         
-        <div class="w-full md:w-[45%] h-[450px] md:h-[600px] leaderboard-panel flex flex-col order-2 md:order-1 relative group hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] transition duration-500">
-            <div class="flex items-center justify-between mb-2 px-2 border-b border-white/10 pb-2">
-                <span class="text-xs font-bold text-blue-300 uppercase tracking-widest">NAME</span>
-                <div class="flex items-center gap-3">
-                    <span id="last-updated" class="text-[10px] text-gray-400 font-mono hidden md:block"></span>
-                    <button onclick="loadData(true)" class="text-blue-300 hover:text-white transition transform hover:rotate-180 duration-500" title="Refresh">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
+        <!-- Right Column: Podium (Top on Mobile) -->
+        <div class="w-full md:w-[35%] shrink-0 flex items-end justify-center md:pb-8 md:sticky md:top-10 order-1 md:order-2 h-40 md:h-auto">
+            <div id="podium-container" class="flex items-end justify-center gap-2 md:gap-3 w-full h-full"></div>
+        </div>
+
+        <!-- Left Column: The List (Fills remaining space) -->
+        <div class="w-full md:w-[60%] flex flex-col h-full bg-[#0f111a]/80 rounded-t-2xl md:rounded-2xl border border-white/5 backdrop-blur-sm overflow-hidden shadow-2xl order-2 md:order-1">
+            
+            <!-- Search & Filter -->
+            <div class="shrink-0 p-3 md:p-5 pb-2 bg-[#111420] border-b border-[#1f2937]">
+                <div class="relative mb-2 md:mb-4">
+                    <input type="text" id="search-input" placeholder="Search..." 
+                        class="w-full bg-[#0a0e17] text-white placeholder-gray-500 rounded-lg px-4 py-2 md:py-3 pl-10 border border-[#334155] focus:outline-none focus:border-brandGreen focus:ring-1 focus:ring-brandGreen transition-all text-sm font-medium shadow-inner">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm"></i>
+                    <button id="clear-search" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div class="flex justify-between items-center px-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                    <span>Player Rankings</span>
+                    <div class="flex items-center gap-2">
+                        <span id="last-updated" class="font-mono hidden sm:block"></span>
+                        <button onclick="loadData(true)" class="hover:text-white transition transform hover:rotate-180 duration-500" title="Refresh">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div class="relative mb-4 px-1 group-focus-within:scale-105 transition duration-300">
-                <input type="text" id="search-input" placeholder="Search player..." 
-                    class="w-full bg-black/20 text-white placeholder-gray-400 rounded-xl px-4 py-2 pl-10 border border-white/10 focus:outline-none focus:border-blue-400 focus:bg-black/40 transition-all text-sm body-light:bg-white/50 body-light:text-black body-light:placeholder-gray-500">
-                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                <button id="clear-search" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
-            </div>
-
-            <div id="leaderboard-list" class="custom-scroll overflow-y-auto pr-2 space-y-4 h-full pt-2"></div>
+            <!-- Scrollable List -->
+            <div id="leaderboard-list" class="flex-1 overflow-y-auto custom-scroll px-3 py-2 md:px-5 md:py-4 space-y-2"></div>
         </div>
 
-        <div class="w-full md:w-[45%] flex items-end justify-center pt-4 md:pt-0 mb-8 md:mb-0 order-1 md:order-2">
-            <div id="podium-container" class="flex items-end justify-center gap-3 md:gap-6 w-full"></div>
-        </div>
     </main>
 
-    <footer class="w-full bg-[#0a0b16] py-6 z-20 mt-auto relative overflow-hidden transition-colors duration-500 body-light:bg-white body-light:border-t body-light:border-gray-200">
-        <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-70"></div>
-        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center px-6">
-            <div class="mb-4 md:mb-0 text-center md:text-left">
-                <h3 class="text-lg font-teko font-bold text-blue-400 tracking-wider uppercase hover:text-blue-300 transition cursor-pointer">The Creator's Den</h3>
-                <p class="text-gray-500 text-xs mt-1">© 2025 The Creator's Den. All rights reserved.</p>
+    <!-- Footer -->
+    <footer class="w-full border-t border-[#1f2937] bg-[#05080f] py-3 z-20 shrink-0 hidden md:block">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <div class="text-left">
+                <h3 class="text-base font-teko font-bold text-gray-300 tracking-wider uppercase">The Creator's Den</h3>
+                <p class="text-gray-600 text-[10px]">© 2025.</p>
             </div>
-            <div class="flex items-center gap-4">
-                <span class="text-blue-200 body-light:text-blue-800 font-bold tracking-[0.1em] uppercase text-xs hidden md:block">Connect:</span>
-                <a href="https://www.instagram.com/the.creators_den?igsh=MWxjeHI3ODd0M2ZyZA==" target="_blank" class="group relative">
-                    <div class="absolute inset-0 bg-pink-600 rounded-full blur-md opacity-40 group-hover:opacity-80 transition duration-300"></div>
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] flex items-center justify-center shadow-lg border border-white/20 relative z-10 transform group-hover:-translate-y-1 transition duration-300"><i class="fab fa-instagram text-xl text-white"></i></div>
-                </a>
-                <a href="https://chat.whatsapp.com/J9PtvxunychI8ifKUbPJkw?mode=hqrt3" target="_blank" class="group relative">
-                    <div class="absolute inset-0 bg-green-600 rounded-full blur-md opacity-40 group-hover:opacity-80 transition duration-300"></div>
-                    <div class="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center shadow-lg border border-white/20 relative z-10 transform group-hover:-translate-y-1 transition duration-300"><i class="fab fa-whatsapp text-xl text-white"></i></div>
-                </a>
+            <div class="flex items-center gap-3">
+                <a href="#" class="text-gray-500 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
     </footer>
 
+    <!-- PROFILE MODAL -->
+    <div id="profile-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/90 backdrop-blur-sm hidden" onclick="closeModal(event)">
+        <div id="modal-content" class="bg-[#111625] border border-[#2d3748] rounded-2xl w-[95%] max-w-lg shadow-2xl relative overflow-hidden flex flex-col" onclick="event.stopPropagation()">
+            
+            <canvas id="modal-confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none z-[5]"></canvas>
+
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white z-20 hover:rotate-90 transition duration-300 bg-black/40 rounded-full w-8 h-8 flex items-center justify-center"><i class="fas fa-times"></i></button>
+            
+            <!-- Header Section -->
+            <div class="relative z-10 flex flex-col items-center pt-8 pb-6 bg-gradient-to-b from-[#1a2035] to-[#111625] border-b border-[#2d3748]">
+                <div class="relative mb-3">
+                    <div id="modal-avatar" class="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-teko font-bold shadow-2xl border-4 border-[#111625] bg-[#1a2035] text-white"></div>
+                    <div id="modal-badge-container" class="absolute -bottom-1 -right-1 hidden">
+                        <div class="bg-brandYellow text-black rounded-full p-1.5 border-4 border-[#111625] shadow-lg"><i class="fas fa-crown text-xs"></i></div>
+                    </div>
+                </div>
+
+                <h2 id="modal-name" class="text-3xl font-teko font-bold uppercase tracking-wide text-white leading-none px-4 text-center"></h2>
+                
+                <div class="flex items-center gap-4 mt-3">
+                    <span id="modal-rank" class="text-xs font-bold px-4 py-1 rounded-full border bg-black/20 tracking-wider text-gray-300 border-gray-600"></span>
+                    <span id="modal-total" class="text-brandBlue font-mono font-bold text-xl"></span>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div class="relative z-10 flex-grow bg-[#0d101b] p-2">
+                <div class="text-[11px] uppercase tracking-[0.2em] text-gray-500 font-bold p-4 pb-2">Recent Performance</div>
+                <div id="modal-history" class="overflow-y-auto custom-scroll p-4 pt-0 space-y-3 max-h-[300px]"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRkTp9RMmnQeu5PkTka9qYw_9aBdFduLw2NYjVDKoO9dFp7515s3-i2VA715nxf7dYPVPhgMQqSaKKS/pub?output=csv'; 
         let allPlayers = [];
+        let historyHeaders = [];
+        let modalConfettiInstance = null; 
+        let globalConfettiInstance = null;
+        let winnerConfettiInstance = null;
 
-        // Flashlight
-        document.addEventListener('mousemove', (e) => {
-            const cursorGlow = document.getElementById('cursor-glow');
-            if(cursorGlow) {
-                cursorGlow.style.setProperty('--x', e.clientX + 'px');
-                cursorGlow.style.setProperty('--y', e.clientY + 'px');
-            }
-        });
-
-        function fireConfetti() {
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-        }
-
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light' || (!savedTheme && window.matchMedia('(prefers-color-scheme: light)').matches)) {
-                document.body.classList.add('light');
-                updateThemeUI(true);
-            } else {
-                updateThemeUI(false);
-            }
-        }
-        function toggleTheme() {
-            const isLight = document.body.classList.toggle('light');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            updateThemeUI(isLight);
-        }
-        function updateThemeUI(isLight) {
-            const searchInput = document.getElementById('search-input');
-            const mainTitle = document.querySelector('h2');
-            if(isLight) {
-                searchInput.classList.remove('bg-black/20', 'text-white', 'placeholder-gray-400');
-                searchInput.classList.add('bg-gray-100', 'text-gray-900', 'placeholder-gray-500');
-                mainTitle.classList.replace('text-blue-200', 'text-blue-900');
-            } else {
-                searchInput.classList.add('bg-black/20', 'text-white', 'placeholder-gray-400');
-                searchInput.classList.remove('bg-gray-100', 'text-gray-900', 'placeholder-gray-500');
-                mainTitle.classList.replace('text-blue-900', 'text-blue-200');
-            }
-        }
-
-        // --- FIXED AVATAR GENERATOR ---
-        function getAvatarUrl(name, gender, index) {
-            // Using Name + Index ensures uniqueness
-            const uniqueSeed = encodeURIComponent(name + "_" + index);
+        window.onload = function() {
+            const globalCanvas = document.getElementById('global-confetti-canvas');
+            if (globalCanvas && window.confetti) globalConfettiInstance = confetti.create(globalCanvas, { resize: true, useWorker: true });
             
-            // DiceBear 9.x URL Base
-            let baseUrl = `https://api.dicebear.com/9.x/avataaars/svg?seed=${uniqueSeed}`;
-            
-            if (gender) {
-                const g = gender.toUpperCase().trim();
-                // Female settings: Long hair, no beard
-                if (g === 'F' || g === 'FEMALE') {
-                    return baseUrl + "&top=longHair,straight,straight2,straightStrand&facialHairProbability=0&accessoriesProbability=30";
-                } 
-                // Male settings: Short hair, possible beard
-                else if (g === 'M' || g === 'MALE') {
-                    return baseUrl + "&top=shortHair,shaggyMullet,shortCurly,shortFlat,shortRound&facialHairProbability=30";
-                }
-            }
-            return baseUrl;
+            const winnerCanvas = document.getElementById('winner-confetti-canvas');
+            if (winnerCanvas && window.confetti) winnerConfettiInstance = confetti.create(winnerCanvas, { resize: true, useWorker: true });
+
+            loadData();
+        };
+        
+        function fireGlobalConfetti() {
+            if (globalConfettiInstance) globalConfettiInstance({ particleCount: 120, spread: 100, origin: { y: 0.6 } });
+        }
+
+        function getInitials(name) {
+            if (!name) return "?";
+            const parts = name.trim().split(' ');
+            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
         }
 
         const searchInput = document.getElementById('search-input');
@@ -238,148 +244,189 @@
             renderList(allPlayers);
         }
 
-        function renderSkeleton() {
-            const list = document.getElementById('leaderboard-list');
-            let skeletonHTML = '';
-            for(let i=0; i<6; i++) {
-                skeletonHTML += `
-                <div class="flex items-center w-full mb-3">
-                    <div class="w-12 h-8 skeleton-bg rounded-md mr-3"></div>
-                    <div class="flex-grow h-14 skeleton-bg rounded-full relative"></div>
-                </div>`;
+        function openProfile(playerId) {
+            const player = allPlayers.find(p => p.id === playerId);
+            if (!player) return;
+
+            const modal = document.getElementById('profile-modal');
+            const avatar = document.getElementById('modal-avatar');
+            const badgeContainer = document.getElementById('modal-badge-container');
+            const name = document.getElementById('modal-name');
+            const rank = document.getElementById('modal-rank');
+            const total = document.getElementById('modal-total');
+            const historyContainer = document.getElementById('modal-history');
+            const winnerCanvas = document.getElementById('winner-confetti-canvas');
+
+            let avatarClass = "text-gray-300 bg-[#334155] border-[#15192b]";
+            badgeContainer.classList.add('hidden');
+            winnerCanvas.classList.add('hidden'); 
+
+            if (player.rank === 1) {
+                avatarClass = "text-brandYellow border-brandYellow/30 bg-brandYellow/10";
+                badgeContainer.classList.remove('hidden');
+            } else if (player.rank === 2) {
+                avatarClass = "text-gray-200 border-gray-400/50 bg-white/5";
+            } else if (player.rank === 3) {
+                avatarClass = "text-brandBlue border-brandBlue/30 bg-brandBlue/10";
             }
-            list.innerHTML = skeletonHTML;
+
+            avatar.className = `w-24 h-24 rounded-full flex items-center justify-center text-4xl font-teko font-bold shadow-2xl border-4 ${avatarClass}`;
+            avatar.innerText = getInitials(player.name);
+            
+            name.innerText = player.name;
+            rank.innerText = `RANK #${player.rank}`;
+            rank.className = `text-[11px] font-bold px-3 py-1 rounded-full border tracking-wider ${player.rank === 1 ? 'border-brandYellow text-brandYellow bg-brandYellow/10' : 'border-gray-600 text-gray-400'}`;
+            total.innerText = `${player.points.toLocaleString()} PTS`;
+
+            historyContainer.innerHTML = '';
+            if (player.history && player.history.length > 0) {
+                player.history.forEach((score, idx) => {
+                    const label = historyHeaders[idx] || `Quiz ${idx + 1}`;
+                    const row = `
+                        <div class="flex items-center justify-between p-4 rounded-xl bg-[#111625] border border-[#1f2937] hover:border-brandBlue/50 transition-colors">
+                            <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">${label}</span>
+                            <span class="font-mono font-bold text-white text-lg">${score}</span>
+                        </div>
+                    `;
+                    historyContainer.insertAdjacentHTML('beforeend', row);
+                });
+            } else {
+                historyContainer.innerHTML = '<div class="text-gray-600 text-xs text-center py-8">No history recorded.</div>';
+            }
+
+            modal.classList.remove('hidden');
+            
+            // FULL SCREEN CELEBRATION FOR WINNER
+            if (player.rank === 1 && winnerConfettiInstance) {
+                winnerCanvas.classList.remove('hidden'); 
+                setTimeout(() => {
+                    winnerConfettiInstance.reset();
+                    winnerConfettiInstance({
+                        particleCount: 200,
+                        spread: 160,
+                        origin: { y: 0.5 },
+                        colors: ['#FFC20E', '#00AEEF', '#ED1C24'],
+                        zIndex: 10001
+                    });
+                }, 150);
+            }
+        }
+
+        function closeModal(e) {
+            if (e && e.target.id !== 'profile-modal' && e.target.closest('#modal-content')) return;
+            document.getElementById('profile-modal').classList.add('hidden');
+            document.getElementById('winner-confetti-canvas').classList.add('hidden');
+            if(winnerConfettiInstance) winnerConfettiInstance.reset();
         }
 
         async function loadData(manualRefresh = false) {
-            if(!allPlayers.length || manualRefresh) renderSkeleton();
+            const list = document.getElementById('leaderboard-list');
+            if(manualRefresh) list.innerHTML = `<div class="text-center text-gray-500 mt-10 text-xs uppercase tracking-widest animate-pulse">Refreshing...</div>`;
 
             try {
                 const url = manualRefresh ? `${SHEET_URL}&t=${new Date().getTime()}` : SHEET_URL;
                 const res = await fetch(url);
                 if (!res.ok) throw new Error("Sheet not found");
                 const text = await res.text();
-                
-                // Smart CSV Parsing to handle empty columns
                 const rows = text.split('\n').map(r => r.split(','));
-                const players = [];
                 
-                // Try to find the Gender column dynamically
-                let genderIndex = -1;
-                if(rows.length > 0) {
-                    const headers = rows[0].map(h => h.replace(/"/g, '').trim().toLowerCase());
-                    genderIndex = headers.findIndex(h => h === 'gender' || h === 'sex' || h === 'm/f');
+                if (rows.length > 0) {
+                    historyHeaders = rows[0].slice(2).map(h => h.replace(/"/g, '').trim());
                 }
 
+                const players = [];
                 for (let i = 1; i < rows.length; i++) {
                     const col = rows[i];
                     if (col.length < 2) continue;
-                    
                     const name = col[0].replace(/"/g, '').trim();
-                    
-                    // Robust Gender Check
-                    let gender = '';
-                    // 1. Try named column
-                    if (genderIndex > -1 && col[genderIndex]) {
-                        gender = col[genderIndex].replace(/"/g, '').trim();
-                    } 
-                    // 2. Fallback: If col[1] is NOT a number, assume it's Gender
-                    else if (col.length > 2 && isNaN(parseInt(col[1].replace(/"/g, '').trim()))) {
-                        gender = col[1].replace(/"/g, '').trim();
+                    let totalPts = 0;
+                    const cleanTotal = col[1].replace(/"/g, '').trim();
+                    if(cleanTotal !== "" && !isNaN(cleanTotal)) totalPts = parseInt(cleanTotal);
+                    const history = [];
+                    for(let j=2; j<col.length; j++) {
+                        const val = col[j].replace(/"/g, '').trim();
+                        if(val) history.push(val); 
                     }
-
-                    // Robust Point Finding
-                    let pts = 0;
-                    for(let j=1; j<col.length; j++) {
-                        // Skip gender column if we found one
-                        if (j === genderIndex) continue;
-                        
-                        // Clean the value
-                        const rawVal = col[j].replace(/"/g, '').trim();
-                        // Check if it looks like a number
-                        if(rawVal !== "" && !isNaN(rawVal)) { 
-                            pts = parseInt(rawVal); 
-                            break; // Stop at first valid number
-                        }
-                    }
-                    
-                    if(name && name !== "Name" && !isNaN(pts)) {
-                        players.push({ name, points: pts, gender: gender });
+                    if(name && name !== "Name" && !isNaN(totalPts)) {
+                        players.push({ id: i, name: name, points: totalPts, history: history });
                     }
                 }
-                
                 players.sort((a, b) => b.points - a.points);
-                // Assign rank and index immediately
-                players.forEach((p, i) => { p.rank = i + 1; p.seedIndex = i; });
+                players.forEach((p, i) => p.rank = i + 1);
                 allPlayers = players;
                 
+                // --- SAVE TO LOCAL STORAGE ---
+                localStorage.setItem('leaderboard_data', JSON.stringify(players));
+                localStorage.setItem('leaderboard_headers', JSON.stringify(historyHeaders));
+                localStorage.setItem('leaderboard_time', new Date().toISOString());
+
                 renderList(players);
                 renderPodium(players);
-                
-                if(!manualRefresh) fireConfetti();
-
                 const now = new Date();
-                document.getElementById('last-updated').innerText = `Updated: ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+                document.getElementById('last-updated').innerText = `UPDATED: ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
             } catch (err) {
-                // FALLBACK FOR LOCALHOST
-                console.warn("GitHub Pages Mode Failed (Localhost?), using Demo Data");
+                console.warn("Fetch failed, trying cache...", err);
                 
-                const demoData = [
-                    { name: "Rehan Ali (Demo)", points: 2500, gender: "M" },
-                    { name: "Sarah Smith (Demo)", points: 2300, gender: "F" },
-                    { name: "John Doe (Demo)", points: 2100, gender: "M" },
-                    { name: "Alice W (Demo)", points: 1900, gender: "F" },
-                    { name: "Mike Ross (Demo)", points: 1700, gender: "M" },
-                    { name: "Jessica P (Demo)", points: 1500, gender: "F" },
-                ];
-                demoData.forEach((p, i) => { p.rank = i + 1; p.seedIndex = i; });
-                allPlayers = demoData;
-                
-                renderList(demoData);
-                renderPodium(demoData);
-                fireConfetti();
-                
-                const list = document.getElementById('leaderboard-list');
-                const demoNotice = document.createElement('div');
-                demoNotice.className = "text-center text-yellow-400 text-xs mb-4 animate-pulse";
-                demoNotice.innerHTML = "⚠️ Showing Demo Data (Localhost Restricted)";
-                list.prepend(demoNotice);
+                // --- LOAD FROM LOCAL STORAGE ---
+                const cachedPlayers = localStorage.getItem('leaderboard_data');
+                const cachedHeaders = localStorage.getItem('leaderboard_headers');
+                const cachedTime = localStorage.getItem('leaderboard_time');
+
+                if (cachedPlayers) {
+                    allPlayers = JSON.parse(cachedPlayers);
+                    if(cachedHeaders) historyHeaders = JSON.parse(cachedHeaders);
+                    
+                    renderList(allPlayers);
+                    renderPodium(allPlayers);
+                    
+                    const toast = document.createElement('div');
+                    toast.className = "text-center text-brandYellow text-[10px] uppercase tracking-widest mb-2 animate-pulse";
+                    toast.innerHTML = "⚠️ Showing Cached Data (Offline)";
+                    list.prepend(toast);
+                    
+                    if(cachedTime) {
+                        const date = new Date(cachedTime);
+                        document.getElementById('last-updated').innerText = `CACHED: ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+                    }
+                } else {
+                    list.innerHTML = `<div class="text-center text-gray-500 mt-10 text-sm">Unable to load data. Please check connection.</div>`;
+                }
             }
         }
 
         function renderList(players) {
             const list = document.getElementById('leaderboard-list');
             list.innerHTML = '';
-            if(players.length === 0) { list.innerHTML = `<div class="text-center text-gray-400 mt-10">No matches found.</div>`; return; }
+            if(players.length === 0) { list.innerHTML = `<div class="text-center text-gray-500 text-xs mt-10">NO MATCHES FOUND</div>`; return; }
+            
             players.forEach((p, idx) => {
                 const rank = p.rank; 
-                // Using seedIndex guarantees unique avatar
-                const avatarUrl = getAvatarUrl(p.name, p.gender, p.seedIndex);
+                const initials = getInitials(p.name);
                 
-                let badgeHtml = `<div class="w-8 md:w-12 flex justify-center"><span class="text-gray-500 font-teko text-xl md:text-3xl font-bold opacity-50">#${rank}</span></div>`;
-                if (rank === 1) badgeHtml = `<div class="w-8 md:w-12 flex justify-center"><div class="relative transform hover:scale-110 transition"><i class="fas fa-certificate text-yellow-400 text-2xl md:text-4xl drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]"></i><span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black font-bold text-[10px] md:text-xs">1</span></div></div>`;
-                if (rank === 2) badgeHtml = `<div class="w-8 md:w-12 flex justify-center"><div class="relative transform hover:scale-110 transition"><i class="fas fa-certificate text-gray-300 text-2xl md:text-4xl drop-shadow-[0_0_10px_rgba(209,213,219,0.6)]"></i><span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black font-bold text-[10px] md:text-xs">2</span></div></div>`;
-                if (rank === 3) badgeHtml = `<div class="w-8 md:w-12 flex justify-center"><div class="relative transform hover:scale-110 transition"><i class="fas fa-certificate text-orange-400 text-2xl md:text-4xl drop-shadow-[0_0_10px_rgba(251,146,60,0.6)]"></i><span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black font-bold text-[10px] md:text-xs">3</span></div></div>`;
+                let rankBadge = `<div class="w-8 h-8 flex items-center justify-center bg-[#1e2330] text-gray-500 font-bold rounded-full text-xs border border-[#334155] font-mono">${rank}</div>`;
+                if(rank===1) rankBadge = `<div class="w-8 h-8 flex items-center justify-center bg-brandYellow text-black font-bold rounded-full shadow-[0_0_10px_rgba(255,194,14,0.5)] text-sm border-2 border-white"><i class="fas fa-trophy text-xs"></i></div>`;
+                if(rank===2) rankBadge = `<div class="w-8 h-8 flex items-center justify-center bg-brandRed text-white font-bold rounded-full shadow-[0_0_10px_rgba(237,28,36,0.5)] text-sm border-2 border-white">2</div>`;
+                if(rank===3) rankBadge = `<div class="w-8 h-8 flex items-center justify-center bg-brandBlue text-white font-bold rounded-full shadow-[0_0_10px_rgba(0,174,239,0.5)] text-sm border-2 border-white">3</div>`;
+
+                const delay = idx * 0.05; 
 
                 const html = `
-                <div class="flex items-center w-full animate-[slideIn_0.5s_ease-out_forwards] group player-card" style="animation-delay: ${idx * 0.05}s">
-                    ${badgeHtml}
-                    <div class="relative flex-grow ml-3 h-14 md:h-16 transform transition duration-300">
-                        <div class="absolute inset-0 bg-gradient-to-r from-[#a31621] to-[#d92e3c] rounded-full flex items-center justify-between px-4 pl-20 md:pl-28 shadow-[0_5px_15px_rgba(163,22,33,0.3)] border border-white/10 group-hover:border-white/50 transition">
-                             <div class="text-left leading-none overflow-hidden flex flex-col justify-center flex-1 min-w-0 pr-2">
-                                <div class="text-[9px] md:text-[11px] text-red-200 uppercase tracking-widest opacity-80 mb-[2px]">NAME</div>
-                                <div class="text-sm md:text-xl font-bold uppercase whitespace-nowrap truncate w-full tracking-wide drop-shadow-md text-white">${p.name}</div>
-                             </div>
-                             <div class="text-right leading-none pl-2 flex flex-col justify-center">
-                                <div class="text-2xl md:text-3xl font-teko font-bold text-white drop-shadow-md">${p.points}</div>
-                                <div class="text-[9px] md:text-[11px] font-bold uppercase text-red-200 tracking-widest">PTS</div>
-                             </div>
+                <div class="pro-card mb-2 animate-[slideIn_0.4s_ease-out_forwards] group ${rank===1 ? 'rank-1-border' : rank===2 ? 'rank-2-border' : rank===3 ? 'rank-3-border' : 'border-l-gray-600'}" style="animation-delay: ${delay}s" onclick="openProfile(${p.id})">
+                    <div class="w-10 flex justify-center shrink-0">
+                        ${rankBadge}
+                    </div>
+                    <div class="w-12 flex justify-center shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-[#1e2330] flex items-center justify-center border-2 border-[#334155] text-white font-bold text-xs relative overflow-hidden uppercase">
+                            ${initials}
                         </div>
-                        
-                        <!-- List Avatar -->
-                        <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-16 h-16 md:w-20 md:h-20 bg-[#8a121b] rounded-full border-[4px] border-[#0f1020] flex items-center justify-center shadow-xl z-10 group-hover:border-white transition duration-300 overflow-hidden">
-                            <img src="${avatarUrl}" alt="${p.name}" class="w-full h-full object-cover">
-                        </div>
+                    </div>
+                    <div class="flex-grow pl-3 pr-2 min-w-0 flex flex-col justify-center">
+                        <div class="text-[9px] text-gray-500 uppercase tracking-widest leading-none mb-0.5 font-bold">NAME</div>
+                        <div class="text-sm font-bold uppercase truncate text-white leading-tight tracking-wide group-hover:text-brandGreen transition-colors duration-200">${p.name}</div>
+                    </div>
+                    <div class="text-right pr-2 shrink-0">
+                         <div class="text-xl font-teko font-bold text-brandBlue leading-none group-hover:text-white transition-colors">${p.points}</div>
+                         <div class="text-[9px] font-bold uppercase text-gray-500 tracking-widest leading-none">PTS</div>
                     </div>
                 </div>`;
                 list.insertAdjacentHTML('beforeend', html);
@@ -392,38 +439,34 @@
             const top3 = [ players[1] || {name: "---", points: 0}, players[0] || {name: "---", points: 0}, players[2] || {name: "---", points: 0} ];
             
             const configs = [
-                { rank: 2, color: 'bg-gradient-to-b from-red-500 to-red-700', height: 'h-28 md:h-40', border: 'border-red-400', translate: 'translate-y-0', anim: 'animate-float-delay' }, 
-                { rank: 1, color: 'bg-gradient-to-b from-blue-500 to-blue-700', height: 'h-36 md:h-52', border: 'border-blue-400', translate: '-translate-y-4', anim: 'animate-float' }, 
-                { rank: 3, color: 'bg-gradient-to-b from-yellow-400 to-yellow-600', height: 'h-24 md:h-32', border: 'border-yellow-300', translate: 'translate-y-0', anim: 'animate-float-delay' }
+                { rank: 2, color: 'bg-brandRed', height: 'h-32 md:h-44', border: 'border-[#b91c1c]', translate: 'translate-y-0', anim: 'float', delay: Math.random() * 2 }, 
+                { rank: 1, color: 'bg-brandBlue', height: 'h-40 md:h-56', border: 'border-[#0077a3]', translate: '-translate-y-4', anim: 'float', delay: Math.random() * 2 }, 
+                { rank: 3, color: 'bg-brandYellow', height: 'h-24 md:h-32', border: 'border-[#b8860b]', translate: 'translate-y-0', anim: 'float', delay: Math.random() * 2 }
             ];
+
             top3.forEach((p, i) => {
                 const cfg = configs[i];
-                const avatarUrl = getAvatarUrl(p.name, p.gender, p.seedIndex);
-                
+                const initials = getInitials(p.name);
                 const html = `
-                <div class="flex flex-col items-center w-1/3 max-w-[140px] ${cfg.translate} ${cfg.anim} transition-transform hover:scale-105 duration-300">
-                    ${cfg.rank === 1 ? `<div class="relative"><i class="fas fa-crown text-[#ffd700] text-3xl md:text-5xl mb-2 drop-shadow-[0_0_15px_rgba(255,215,0,0.8)] animate-pulse"></i></div>` : ''}
-                    
-                    <!-- Podium Avatar (No Circle) -->
-                    <div class="relative w-28 h-28 md:w-36 md:h-36 flex items-end justify-center z-10 -mb-4 hover:scale-110 transition duration-500">
-                         <img src="${avatarUrl}" alt="${p.name}" class="w-full h-full object-contain drop-shadow-2xl filter drop-shadow-lg">
-                         ${cfg.rank === 1 ? '<div class="absolute -top-2 bg-yellow-400 text-black text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg z-20">WINNER</div>' : ''}
-                    </div>
-
-                    <div class="mb-2 text-center relative z-0">
-                        <div class="text-[11px] md:text-base font-bold uppercase drop-shadow-lg leading-tight px-1 truncate max-w-[90px] md:max-w-full text-white drop-shadow-md text-shadow-sm" style="text-shadow: 0 2px 4px rgba(0,0,0,0.8);">${p.name}</div>
-                        <div class="text-[10px] md:text-sm font-teko text-yellow-400 tracking-widest bg-black/30 px-2 rounded mt-1 inline-block">${p.points} PTS</div>
-                    </div>
-                    <div class="w-full ${cfg.color} ${cfg.height} rounded-t-lg flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] border-t-4 ${cfg.border} relative overflow-hidden group hover:brightness-110 transition">
-                        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/20 to-transparent pointer-events-none"></div>
-                        <span class="text-5xl md:text-8xl font-teko font-bold text-white/20 select-none">${cfg.rank}</span>
+                <div class="flex flex-col items-center w-1/3 max-w-[140px] ${cfg.translate} cursor-pointer" onclick="openProfile(${p.id})">
+                    <div style="animation: float 6s ease-in-out infinite; animation-delay: ${cfg.delay}s" class="w-full flex flex-col items-center">
+                        ${cfg.rank === 1 ? `<div class="relative"><i class="fas fa-crown text-brandYellow text-3xl md:text-5xl mb-2 drop-shadow-md"></i></div>` : ''}
+                        <div class="w-16 h-16 md:w-20 md:h-20 bg-[#15192b] rounded-full border-[3px] border-white flex items-center justify-center shadow-lg mb-3 z-10 relative hover:scale-105 transition-transform">
+                             <span class="text-lg md:text-2xl font-bold text-white">${initials}</span>
+                             ${cfg.rank === 1 ? '<div class="absolute -bottom-2 bg-brandYellow text-black text-[8px] font-bold px-2 py-0.5 rounded shadow-sm z-20 tracking-wider border border-white">WINNER</div>' : ''}
+                        </div>
+                        <div class="mb-2 text-center relative z-0">
+                            <div class="text-[10px] md:text-xs font-bold uppercase leading-tight px-1 truncate max-w-[90px] md:max-w-full text-white tracking-wide">${p.name}</div>
+                            <div class="text-[9px] md:text-[10px] font-teko text-brandBlue tracking-widest bg-[#15192b] px-2 rounded mt-1 inline-block border border-[#334155]">${p.points} PTS</div>
+                        </div>
+                        <div class="w-full ${cfg.color} ${cfg.height} rounded-t-lg flex items-center justify-center shadow-lg border-b-0 border-x-0 border-t-4 ${cfg.border} relative overflow-hidden">
+                            <span class="text-6xl md:text-8xl font-teko font-bold text-black/20 select-none">${cfg.rank}</span>
+                        </div>
                     </div>
                 </div>`;
                 container.insertAdjacentHTML('beforeend', html);
             });
         }
-        initTheme();
-        loadData();
     </script>
 </body>
 </html>
