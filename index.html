@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Creator's Den Leaderboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -46,23 +46,26 @@
     </script>
 
     <style>
+        /* --- VIEWPORT LOCK --- */
         body { 
             background-color: #0b0d17;
             color: white;
             cursor: default; 
             font-family: 'Poppins', sans-serif;
-            overflow-x: hidden;
+            overflow: hidden; /* Prevent body scroll */
             height: 100vh;
-            height: 100dvh; 
+            height: 100dvh; /* Mobile browser support */
+            display: flex;
+            flex-direction: column;
         }
 
         /* --- Scrollbar --- */
-        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: #0f111a; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #00AEEF; }
 
-        /* --- PROFESSIONAL LIST CARD --- */
+        /* --- LIST CARD --- */
         .pro-card {
             background: linear-gradient(145deg, #15192b, #111420);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -71,7 +74,7 @@
             transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
             display: flex;
             align-items: center;
-            padding: 10px 12px; 
+            padding: 8px 12px; 
             gap: 12px;
         }
 
@@ -94,21 +97,21 @@
         #profile-modal:not(.hidden) #modal-content { transform: scale(1); }
     </style>
 </head>
-<body class="h-screen w-screen overflow-hidden flex flex-col bg-[#0a0e17] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1a2035] via-[#0a0e17] to-[#0a0e17]">
+<body class="bg-[#0a0e17] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1a2035] via-[#0a0e17] to-[#0a0e17]">
 
     <canvas id="global-confetti-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-[50]"></canvas>
     <canvas id="winner-confetti-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-[10001] hidden"></canvas>
 
     <!-- Header -->
-    <header class="w-full py-3 md:py-6 text-center z-10 shrink-0">
+    <header class="w-full py-3 text-center z-10 shrink-0">
         <div class="flex flex-col items-center justify-center gap-0">
-            <div class="flex items-center gap-2 text-xs md:text-base font-bold tracking-[0.3em] uppercase drop-shadow-md">
+            <div class="flex items-center gap-2 text-xs font-bold tracking-[0.3em] uppercase drop-shadow-md text-gray-400">
                 <span class="text-brandRed">THE</span>
                 <span class="text-brandBlue">CREATOR'S</span>
                 <span class="text-brandYellow">DEN</span>
             </div>
             
-            <div class="flex items-center justify-center gap-2 md:gap-3 mt-1 cursor-pointer group" onclick="fireGlobalConfetti()">
+            <div class="flex items-center justify-center gap-2 mt-1 cursor-pointer group" onclick="fireGlobalConfetti()">
                 <h1 class="text-5xl md:text-7xl font-teko font-bold text-white uppercase tracking-wide leading-none pt-1 drop-shadow-2xl">
                     LEADERBOARD
                 </h1>
@@ -117,28 +120,29 @@
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- Main Content Wrapper -->
     <main class="flex-1 min-h-0 container mx-auto px-2 md:px-4 flex flex-col md:flex-row items-stretch justify-center gap-4 md:gap-8 pb-2 max-w-7xl relative z-10">
         
-        <!-- Right Column: Podium (Top on Mobile) -->
-        <div class="w-full md:w-[35%] shrink-0 flex items-end justify-center md:pb-8 md:sticky md:top-10 order-1 md:order-2 h-40 md:h-auto">
+        <!-- Right Column: Podium (Order 1 on Mobile - Top) -->
+        <!-- Adjusted height for mobile alignment -->
+        <div class="w-full md:w-[35%] shrink-0 flex items-end justify-center order-1 md:order-2 h-auto md:h-auto md:pb-8 md:sticky md:top-10">
             <div id="podium-container" class="flex items-end justify-center gap-2 md:gap-3 w-full h-full"></div>
         </div>
 
-        <!-- Left Column: The List (Fills remaining space) -->
-        <div class="w-full md:w-[60%] flex flex-col h-full bg-[#0f111a]/80 rounded-t-2xl md:rounded-2xl border border-white/5 backdrop-blur-sm overflow-hidden shadow-2xl order-2 md:order-1">
+        <!-- Left Column: The List (Order 2 on Mobile - Bottom) -->
+        <div class="w-full md:w-[60%] flex flex-col h-full bg-[#0f111a]/80 rounded-t-2xl md:rounded-2xl border border-white/5 backdrop-blur-sm overflow-hidden shadow-2xl order-2 md:order-1 min-h-0">
             
             <!-- Search & Filter -->
-            <div class="shrink-0 p-3 md:p-5 pb-2 bg-[#111420] border-b border-[#1f2937]">
-                <div class="relative mb-2 md:mb-4">
+            <div class="shrink-0 p-3 bg-[#111420] border-b border-[#1f2937]">
+                <div class="relative mb-2">
                     <input type="text" id="search-input" placeholder="Search..." 
-                        class="w-full bg-[#0a0e17] text-white placeholder-gray-500 rounded-lg px-4 py-2 md:py-3 pl-10 border border-[#334155] focus:outline-none focus:border-brandGreen focus:ring-1 focus:ring-brandGreen transition-all text-sm font-medium shadow-inner">
+                        class="w-full bg-[#0a0e17] text-white placeholder-gray-500 rounded-lg px-4 py-2 pl-10 border border-[#334155] focus:outline-none focus:border-brandGreen focus:ring-1 focus:ring-brandGreen transition-all text-sm font-medium shadow-inner">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm"></i>
                     <button id="clear-search" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
                 </div>
 
                 <div class="flex justify-between items-center px-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                    <span>Player Rankings</span>
+                    <span>Rankings</span>
                     <div class="flex items-center gap-2">
                         <span id="last-updated" class="font-mono hidden sm:block"></span>
                         <button onclick="loadData(true)" class="hover:text-white transition transform hover:rotate-180 duration-500" title="Refresh">
@@ -148,26 +152,22 @@
                 </div>
             </div>
 
-            <!-- Scrollable List -->
-            <div id="leaderboard-list" class="flex-1 overflow-y-auto custom-scroll px-3 py-2 md:px-5 md:py-4 space-y-2"></div>
+            <!-- Scrollable List (Takes remaining height) -->
+            <div id="leaderboard-list" class="flex-1 overflow-y-auto custom-scroll px-3 py-2 space-y-2"></div>
         </div>
 
     </main>
 
-    <!-- Footer -->
+    <!-- Footer (Hidden on small mobile to save space) -->
     <footer class="w-full border-t border-[#1f2937] bg-[#05080f] py-3 z-20 shrink-0 hidden md:block">
         <div class="container mx-auto flex justify-between items-center px-6">
             <div class="text-left">
                 <h3 class="text-base font-teko font-bold text-gray-300 tracking-wider uppercase">The Creator's Den</h3>
-                <p class="text-gray-600 text-[10px]">© 2025. Evaluating Excellence.</p>
+                <p class="text-gray-600 text-[10px]">© 2025.</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="https://www.instagram.com/the.creators_den" target="_blank" class="w-8 h-8 rounded-full bg-[#111625] hover:bg-brandBlue/20 flex items-center justify-center transition-all duration-300 group border border-[#1f2937]">
-                    <i class="fab fa-instagram text-sm text-gray-400 group-hover:text-white transition-colors"></i>
-                </a>
-                <a href="https://chat.whatsapp.com/J9PtvxunychI8ifKUbPJkw" target="_blank" class="w-8 h-8 rounded-full bg-[#111625] hover:bg-green-600/20 flex items-center justify-center transition-all duration-300 group border border-[#1f2937]">
-                    <i class="fab fa-whatsapp text-sm text-gray-400 group-hover:text-white transition-colors"></i>
-                </a>
+                <a href="#" class="text-gray-500 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
     </footer>
@@ -195,16 +195,11 @@
                     <span id="modal-rank" class="text-xs font-bold px-4 py-1 rounded-full border bg-black/20 tracking-wider text-gray-300 border-gray-600"></span>
                     <span id="modal-total" class="text-brandBlue font-mono font-bold text-xl"></span>
                 </div>
-
-                <!-- Share Button -->
-                <button onclick="shareRank()" class="mt-4 flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all active:scale-95 group">
-                    <i class="fas fa-share-alt text-brandBlue group-hover:text-white"></i> Share Score
-                </button>
             </div>
 
             <!-- History Section -->
             <div class="relative z-10 flex-grow bg-[#0d101b] p-2">
-                <div class="text-[11px] uppercase tracking-[0.2em] text-gray-500 font-bold p-4 pb-2">Recent Performance</div>
+                <div class="text-[11px] uppercase tracking-[0.2em] text-gray-500 font-bold p-4 pb-2">History</div>
                 <div id="modal-history" class="overflow-y-auto custom-scroll p-4 pt-0 space-y-3 max-h-[300px]"></div>
             </div>
         </div>
@@ -222,11 +217,9 @@
         let currentPlayerForShare = null;
 
         window.onload = function() {
-            // Global (Header) Confetti
             const globalCanvas = document.getElementById('global-confetti-canvas');
             if (globalCanvas && window.confetti) globalConfettiInstance = confetti.create(globalCanvas, { resize: true, useWorker: true });
             
-            // Winner Full Screen Confetti
             const winnerCanvas = document.getElementById('winner-confetti-canvas');
             if (winnerCanvas && window.confetti) winnerConfettiInstance = confetti.create(winnerCanvas, { resize: true, useWorker: true });
 
@@ -256,17 +249,6 @@
             searchInput.value = '';
             clearBtn.classList.add('hidden');
             renderList(allPlayers.slice(0, displayCount), false); 
-        }
-
-        function shareRank() {
-            if (!currentPlayerForShare) return;
-            // UPDATED LINK HERE
-            const text = `🏆 I'm Rank #${currentPlayerForShare.rank} on The Creator's Den Leaderboard with ${currentPlayerForShare.points} PTS! 🚀 Check it out: https://thecreatorsden.github.io/TheCreatorsDen/`;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("Stats copied to clipboard! Ready to share.");
-            }).catch(err => {
-                console.error("Failed to copy", err);
-            });
         }
 
         function openProfile(playerId) {
@@ -322,7 +304,6 @@
 
             modal.classList.remove('hidden');
             
-            // FULL SCREEN CELEBRATION FOR WINNER
             if (player.rank === 1 && winnerConfettiInstance) {
                 winnerCanvas.classList.remove('hidden'); 
                 setTimeout(() => {
@@ -381,42 +362,25 @@
                 players.forEach((p, i) => p.rank = i + 1);
                 allPlayers = players;
                 
-                // --- SAVE TO LOCAL STORAGE ---
-                localStorage.setItem('leaderboard_data', JSON.stringify(players));
-                localStorage.setItem('leaderboard_headers', JSON.stringify(historyHeaders));
-                localStorage.setItem('leaderboard_time', new Date().toISOString());
-
                 renderList(players.slice(0, displayCount), false);
                 renderPodium(players);
                 const now = new Date();
-                document.getElementById('last-updated').innerText = `UPDATED: ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+                const updatedEl = document.getElementById('last-updated');
+                if(updatedEl) updatedEl.innerText = `UPDATED: ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
             } catch (err) {
-                console.warn("Fetch failed, trying cache...", err);
-                
-                // --- LOAD FROM LOCAL STORAGE ---
-                const cachedPlayers = localStorage.getItem('leaderboard_data');
-                const cachedHeaders = localStorage.getItem('leaderboard_headers');
-                const cachedTime = localStorage.getItem('leaderboard_time');
-
-                if (cachedPlayers) {
-                    allPlayers = JSON.parse(cachedPlayers);
-                    if(cachedHeaders) historyHeaders = JSON.parse(cachedHeaders);
-                    
-                    renderList(allPlayers.slice(0, displayCount), false);
-                    renderPodium(allPlayers);
-                    
-                    const toast = document.createElement('div');
-                    toast.className = "text-center text-brandYellow text-[10px] uppercase tracking-widest mb-2 animate-pulse";
-                    toast.innerHTML = "⚠️ Showing Cached Data (Offline)";
-                    list.prepend(toast);
-                    
-                    if(cachedTime) {
-                        const date = new Date(cachedTime);
-                        document.getElementById('last-updated').innerText = `CACHED: ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
-                    }
-                } else {
-                    list.innerHTML = `<div class="text-center text-gray-500 mt-10 text-sm">Unable to load data. Please check connection.</div>`;
-                }
+                console.warn("Using Demo Data");
+                const demoData = [
+                    { id: 1, name: "Rehan Ali", points: 250, history: [50, 100, 100] },
+                    { id: 2, name: "Sarah Smith", points: 230, history: [40, 90, 100] },
+                    { id: 3, name: "John Doe", points: 210, history: [50, 80, 80] },
+                    { id: 4, name: "Alice W", points: 190, history: [30, 80, 80] },
+                    { id: 5, name: "Mike Ross", points: 170, history: [20, 70, 80] },
+                ];
+                demoData.forEach((p, i) => p.rank = i + 1);
+                allPlayers = demoData;
+                historyHeaders = ["Quiz 1", "Quiz 2", "Final"]; 
+                renderList(demoData);
+                renderPodium(demoData);
             }
         }
 
@@ -425,11 +389,6 @@
             list.innerHTML = '';
             if(players.length === 0) { list.innerHTML = `<div class="text-center text-gray-500 text-xs mt-10">NO MATCHES FOUND</div>`; return; }
             
-            // Show "Load More" only if not searching and there are more players
-            if (!isSearch && allPlayers.length > displayCount) {
-                // Add button logic here if needed (omitted for brevity in this final version, scroll works fine)
-            }
-
             players.forEach((p, idx) => {
                 const rank = p.rank; 
                 const initials = getInitials(p.name);
@@ -479,10 +438,11 @@
             container.innerHTML = '';
             const top3 = [ players[1] || {name: "---", points: 0}, players[0] || {name: "---", points: 0}, players[2] || {name: "---", points: 0} ];
             
+            // RESPONSIVE PODIUM HEIGHTS: Smaller on Mobile
             const configs = [
-                { rank: 2, color: 'bg-brandRed', height: 'h-32 md:h-44', border: 'border-[#b91c1c]', translate: 'translate-y-0', anim: 'float', delay: Math.random() * 2 }, 
-                { rank: 1, color: 'bg-brandBlue', height: 'h-40 md:h-56', border: 'border-[#0077a3]', translate: '-translate-y-4', anim: 'float', delay: Math.random() * 2 }, 
-                { rank: 3, color: 'bg-brandYellow', height: 'h-24 md:h-32', border: 'border-[#b8860b]', translate: 'translate-y-0', anim: 'float', delay: Math.random() * 2 }
+                { rank: 2, color: 'bg-brandRed', height: 'h-24 md:h-44', border: 'border-[#b91c1c]', translate: 'translate-y-0', anim: 'float', delay: Math.random() * 2 }, 
+                { rank: 1, color: 'bg-brandBlue', height: 'h-32 md:h-56', border: 'border-[#0077a3]', translate: '-translate-y-2 md:-translate-y-4', anim: 'float', delay: Math.random() * 2 }, 
+                { rank: 3, color: 'bg-brandYellow', height: 'h-16 md:h-32', border: 'border-[#b8860b]', translate: 'translate-y-0', anim: 'float', delay: Math.random() * 2 }
             ];
 
             top3.forEach((p, i) => {
@@ -492,20 +452,20 @@
                 const html = `
                 <div class="flex flex-col items-center w-1/3 max-w-[140px] ${cfg.translate} cursor-pointer" onclick="openProfile(${p.id})">
                     <div style="animation: float 6s ease-in-out infinite; animation-delay: ${cfg.delay}s" class="w-full flex flex-col items-center">
-                        ${cfg.rank === 1 ? `<div class="relative"><i class="fas fa-crown text-brandYellow text-3xl md:text-5xl mb-2 drop-shadow-md"></i></div>` : ''}
+                        ${cfg.rank === 1 ? `<div class="relative"><i class="fas fa-crown text-brandYellow text-2xl md:text-5xl mb-1 md:mb-2 drop-shadow-md"></i></div>` : ''}
                         
-                        <div class="w-16 h-16 md:w-20 md:h-20 bg-[#15192b] rounded-full border-[3px] border-white flex items-center justify-center shadow-lg mb-3 z-10 relative hover:scale-105 transition-transform">
-                             <span class="text-lg md:text-2xl font-bold text-white">${initials}</span>
-                             ${cfg.rank === 1 ? '<div class="absolute -bottom-2 bg-brandYellow text-black text-[8px] font-bold px-2 py-0.5 rounded shadow-sm z-20 tracking-wider border border-white">WINNER</div>' : ''}
+                        <div class="w-12 h-12 md:w-20 md:h-20 bg-[#15192b] rounded-full border-[3px] border-white flex items-center justify-center shadow-lg mb-2 md:mb-3 z-10 relative hover:scale-105 transition-transform">
+                             <span class="text-sm md:text-2xl font-bold text-white">${initials}</span>
+                             ${cfg.rank === 1 ? '<div class="absolute -bottom-2 bg-brandYellow text-black text-[6px] md:text-[8px] font-bold px-2 py-0.5 rounded shadow-sm z-20 tracking-wider border border-white">WINNER</div>' : ''}
                         </div>
 
-                        <div class="mb-2 text-center relative z-0">
-                            <div class="text-[10px] md:text-xs font-bold uppercase leading-tight px-1 truncate max-w-[90px] md:max-w-full text-white tracking-wide">${p.name}</div>
-                            <div class="text-[9px] md:text-[10px] font-teko text-brandBlue tracking-widest bg-[#15192b] px-2 rounded mt-1 inline-block border border-[#334155]">${p.points} PTS</div>
+                        <div class="mb-1 md:mb-2 text-center relative z-0 w-full">
+                            <div class="text-[9px] md:text-xs font-bold uppercase leading-tight px-1 truncate w-full text-white tracking-wide">${p.name}</div>
+                            <div class="text-[8px] md:text-[10px] font-teko text-brandBlue tracking-widest bg-[#15192b] px-2 rounded mt-0.5 inline-block border border-[#334155]">${p.points} PTS</div>
                         </div>
 
                         <div class="w-full ${cfg.color} ${cfg.height} rounded-t-lg flex items-center justify-center shadow-lg border-b-0 border-x-0 border-t-4 ${cfg.border} relative overflow-hidden">
-                            <span class="text-6xl md:text-8xl font-teko font-bold text-black/20 select-none">${cfg.rank}</span>
+                            <span class="text-4xl md:text-8xl font-teko font-bold text-black/20 select-none">${cfg.rank}</span>
                         </div>
                     </div>
                 </div>`;
