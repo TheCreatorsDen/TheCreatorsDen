@@ -120,22 +120,18 @@
     <!-- Header -->
     <header class="w-full py-2 md:py-4 text-center z-10 shrink-0 select-none">
         <div class="flex flex-col items-center justify-center gap-0">
-            <!-- BRAND LOGO AREA -->
-            <div class="flex items-center justify-center gap-3 mb-1">
-                <img src="logo.png" alt="TCD" class="h-10 md:h-12 w-auto object-contain drop-shadow-lg" onerror="this.style.display='none'">
-                
-                <div class="flex items-center gap-2 text-xs md:text-sm font-bold tracking-[0.2em] uppercase drop-shadow-md text-gray-400">
-                    <span class="text-brandRed">THE</span>
-                    <span class="text-brandBlue">CREATOR'S</span>
-                    <span class="text-brandYellow">DEN</span>
-                </div>
+            <!-- BRAND TEXT ONLY (Logo Removed) -->
+            <div class="flex items-center gap-2 text-xs md:text-sm font-bold tracking-[0.2em] uppercase drop-shadow-md text-gray-400 mb-1">
+                <span class="text-brandRed">THE</span>
+                <span class="text-brandBlue">CREATOR'S</span>
+                <span class="text-brandYellow">DEN</span>
             </div>
             
             <div class="flex items-center justify-center gap-2 cursor-pointer group active:scale-95 transition-transform duration-100" onclick="fireGlobalConfetti()">
-                <h1 class="text-5xl md:text-7xl font-teko font-bold text-white uppercase tracking-wide leading-none pt-1 drop-shadow-2xl">
+                <h1 class="text-5xl md:text-7xl font-teko font-bold text-white uppercase tracking-wide leading-none pt-1 drop-shadow-2xl group-hover:text-brandYellow transition-colors duration-300">
                     LEADERBOARD
                 </h1>
-                <i class="fas fa-trophy text-3xl md:text-5xl text-brandYellow animate-float mb-1 group-hover:rotate-12 transition-transform"></i>
+                <i class="fas fa-trophy text-3xl md:text-5xl text-brandYellow animate-float mb-1 group-hover:rotate-12 transition-transform duration-500"></i>
             </div>
         </div>
     </header>
@@ -144,18 +140,18 @@
     <main class="flex-1 min-h-0 container mx-auto px-2 md:px-4 flex flex-col md:flex-row items-stretch justify-center gap-4 md:gap-8 pb-2 max-w-7xl relative z-10">
         
         <!-- Right Column: Podium (Top on Mobile) -->
-        <div class="w-full md:w-[35%] shrink-0 flex items-end justify-center order-1 md:order-2 h-48 md:h-auto md:pb-8 md:sticky md:top-10">
+        <div class="w-full md:w-[35%] shrink-0 flex items-end justify-center order-1 md:order-2 h-48 md:h-auto md:pb-8 md:sticky md:top-10 transition-all duration-500">
             <div id="podium-container" class="flex items-end justify-center gap-2 md:gap-3 w-full h-full"></div>
         </div>
 
         <!-- Left Column: The List (Bottom on Mobile) -->
-        <div class="w-full md:w-[60%] flex flex-col flex-1 bg-[#0f111a]/80 rounded-t-2xl md:rounded-2xl border border-white/5 backdrop-blur-sm overflow-hidden shadow-2xl order-2 md:order-1 min-h-0">
+        <div class="w-full md:w-[60%] flex flex-col flex-1 bg-[#0f111a]/80 rounded-t-2xl md:rounded-2xl border border-white/5 backdrop-blur-sm overflow-hidden shadow-2xl order-2 md:order-1 min-h-0 transition-all duration-500 hover:shadow-brandBlue/10 hover:border-white/10">
             
             <!-- Search & Filter -->
             <div class="shrink-0 p-3 bg-[#111420] border-b border-[#1f2937]">
                 <div class="relative mb-2">
                     <input type="text" id="search-input" placeholder="Search..." 
-                        class="w-full bg-[#0a0e17] text-white placeholder-gray-500 rounded-lg px-4 py-2 pl-10 border border-[#334155] focus:outline-none focus:border-brandGreen focus:ring-1 focus:ring-brandGreen transition-all text-sm font-medium shadow-inner">
+                        class="w-full bg-[#0a0e17] text-white placeholder-gray-500 rounded-lg px-4 py-2 pl-10 border border-[#334155] focus:outline-none focus:border-brandGreen focus:ring-1 focus:ring-brandGreen transition-all text-sm font-medium shadow-inner hover:bg-[#0f121d]">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm"></i>
                     <button id="clear-search" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
                 </div>
@@ -199,13 +195,15 @@
     <div id="profile-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-md hidden" onclick="closeModal(event)">
         <div id="modal-content" class="bg-[#111625] border border-[#2d3748] rounded-2xl w-[95%] max-w-lg shadow-2xl relative overflow-hidden flex flex-col transition-all" onclick="event.stopPropagation()">
             
+            <!-- Confetti Canvas INSIDE Modal -->
+            <canvas id="modal-confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none z-[5]"></canvas>
+
             <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white z-20 hover:rotate-90 transition duration-300 bg-black/40 rounded-full w-8 h-8 flex items-center justify-center active:scale-90"><i class="fas fa-times"></i></button>
             
             <!-- Header Section -->
             <div class="relative z-10 flex flex-col items-center pt-8 pb-6 bg-gradient-to-b from-[#1a2035] to-[#111625] border-b border-[#2d3748]">
                 <div class="relative mb-3">
                     <div id="modal-avatar" class="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-teko font-bold shadow-2xl border-4 border-[#111625] bg-[#1a2035] text-white"></div>
-                    <!-- Badge Icon logic handled in JS -->
                     <div id="modal-badge-container" class="absolute -bottom-1 -right-1 hidden animate-bounce">
                         <!-- Badge Injected via JS -->
                     </div>
@@ -232,6 +230,7 @@
         let allPlayers = [];
         let historyHeaders = [];
         let globalConfettiInstance = null;
+        let modalConfettiInstance = null;
         let displayCount = 50; 
         let currentPlayerForShare = null;
 
@@ -239,6 +238,10 @@
             // Global Confetti (Main Screen)
             const globalCanvas = document.getElementById('global-confetti-canvas');
             if (globalCanvas && window.confetti) globalConfettiInstance = confetti.create(globalCanvas, { resize: true, useWorker: true });
+            
+            // Modal Confetti init
+            const modalCanvas = document.getElementById('modal-confetti-canvas');
+            if (modalCanvas && window.confetti) modalConfettiInstance = confetti.create(modalCanvas, { resize: true, useWorker: false });
 
             loadData();
         };
@@ -325,7 +328,27 @@
 
             modal.classList.remove('hidden');
             
-            // FULL SCREEN CELEBRATION FOR WINNER
+            // INSIDE MODAL CELEBRATION FOR WINNER
+            if (player.rank === 1 && modalConfettiInstance) {
+                const modalCanvas = document.getElementById('modal-confetti-canvas');
+                if (modalCanvas) {
+                    modalCanvas.width = modalCanvas.clientWidth;
+                    modalCanvas.height = modalCanvas.clientHeight;
+                }
+                
+                setTimeout(() => {
+                    modalConfettiInstance.reset();
+                    modalConfettiInstance({
+                        particleCount: 150,
+                        spread: 80,
+                        origin: { y: 0.5 },
+                        colors: ['#FFC20E', '#00AEEF', '#ED1C24'],
+                        zIndex: 10001
+                    });
+                }, 200);
+            }
+
+            // FULL SCREEN CELEBRATION FOR WINNER (Added as per request)
             if (player.rank === 1) {
                 fireGlobalConfetti(); 
             }
@@ -334,6 +357,7 @@
         function closeModal(e) {
             if (e && e.target.id !== 'profile-modal' && e.target.closest('#modal-content')) return;
             document.getElementById('profile-modal').classList.add('hidden');
+            if(modalConfettiInstance) modalConfettiInstance.reset();
         }
 
         async function loadData(manualRefresh = false) {
@@ -389,6 +413,10 @@
                 historyHeaders = ["Quiz 1", "Quiz 2", "Final"]; 
                 renderList(demoData);
                 renderPodium(demoData);
+                const toast = document.createElement('div');
+                toast.className = "text-center text-brandYellow text-[10px] uppercase tracking-widest mb-2 animate-pulse";
+                toast.innerHTML = "Demo Mode (Localhost)";
+                list.prepend(toast);
             }
         }
 
@@ -401,7 +429,7 @@
                 const rank = p.rank; 
                 const initials = getInitials(p.name);
                 
-                // Rank Badges
+                // Shiny Medals for List
                 let rankBadge = `<div class="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-[#1e2330] text-gray-500 font-bold rounded-full text-xs border border-[#334155] font-mono">${rank}</div>`;
                 if(rank===1) rankBadge = `<div class="w-8 h-8 flex-shrink-0 flex items-center justify-center medal-gold rounded-full font-bold text-sm"><i class="fas fa-trophy text-xs"></i></div>`;
                 if(rank===2) rankBadge = `<div class="w-8 h-8 flex-shrink-0 flex items-center justify-center medal-silver rounded-full font-bold text-sm">2</div>`;
@@ -409,25 +437,29 @@
 
                 const delay = idx * 0.05; 
 
-                // ONE LINE LAYOUT (Fixed Flexbox)
+                // ONE LINE LAYOUT
                 const html = `
                 <div class="pill-row mb-2 animate-[slideIn_0.4s_ease-out_forwards] group cursor-pointer" style="animation-delay: ${delay}s" onclick="openProfile(${p.id})">
                     
+                    <!-- 1. RANK -->
                     <div class="w-10 flex justify-center shrink-0">
                         ${rankBadge}
                     </div>
                     
+                    <!-- 2. AVATAR -->
                     <div class="w-12 flex justify-center shrink-0">
                         <div class="w-10 h-10 rounded-full bg-[#1e2330] flex items-center justify-center border-2 border-[#334155] text-white font-bold text-xs relative overflow-hidden uppercase">
                             ${initials}
                         </div>
                     </div>
 
+                    <!-- 3. NAME -->
                     <div class="flex-grow pl-3 pr-2 min-w-0 flex flex-col justify-center">
                         <div class="text-[9px] text-gray-500 uppercase tracking-widest leading-none mb-0.5 font-bold">NAME</div>
                         <div class="text-sm font-bold uppercase truncate text-white leading-tight tracking-wide group-hover:text-brandGreen transition-colors duration-200">${p.name}</div>
                     </div>
 
+                    <!-- 4. POINTS -->
                     <div class="text-right pr-2 shrink-0">
                          <div class="text-xl font-teko font-bold text-brandBlue leading-none group-hover:text-white transition-colors">${p.points}</div>
                          <div class="text-[9px] font-bold uppercase text-gray-500 tracking-widest leading-none">PTS</div>
@@ -452,19 +484,20 @@
                 const cfg = configs[i];
                 const initials = getInitials(p.name);
                 
-                // Borders matching rank colors for podium avatars
-                let ringColor = "";
-                if(cfg.rank === 1) ringColor = "border-[#FFC20E] shadow-[0_0_15px_rgba(255,194,14,0.4)]";
-                if(cfg.rank === 2) ringColor = "border-[#ED1C24] shadow-[0_0_15px_rgba(237,28,36,0.4)]";
-                if(cfg.rank === 3) ringColor = "border-[#00AEEF] shadow-[0_0_15px_rgba(0,174,239,0.4)]";
+                // Badges/Medals for Podium
+                let badgeHTML = '';
+                if (cfg.rank === 1) badgeHTML = '<div class="absolute -bottom-3 medal-gold text-xs font-bold w-7 h-7 flex items-center justify-center rounded-full z-20 shadow-md border-2 border-white"><i class="fas fa-trophy"></i></div>';
+                else if (cfg.rank === 2) badgeHTML = '<div class="absolute -bottom-3 medal-silver text-xs font-bold w-7 h-7 flex items-center justify-center rounded-full z-20 shadow-md border-2 border-white">2</div>';
+                else if (cfg.rank === 3) badgeHTML = '<div class="absolute -bottom-3 medal-bronze text-xs font-bold w-7 h-7 flex items-center justify-center rounded-full z-20 shadow-md border-2 border-white">3</div>';
 
                 const html = `
                 <div class="flex flex-col items-center w-1/3 max-w-[140px] ${cfg.translate} cursor-pointer" onclick="openProfile(${p.id})">
                     <div style="animation: float 6s ease-in-out infinite; animation-delay: ${cfg.delay}s" class="w-full flex flex-col items-center">
                         ${cfg.rank === 1 ? `<div class="relative"><i class="fas fa-crown text-brandYellow text-2xl md:text-5xl mb-1 md:mb-2 drop-shadow-md"></i></div>` : ''}
                         
-                        <div class="w-12 h-12 md:w-20 md:h-20 bg-[#15192b] rounded-full border-[3px] ${ringColor} flex items-center justify-center shadow-lg mb-2 md:mb-3 z-10 relative hover:scale-105 transition-transform">
+                        <div class="w-12 h-12 md:w-20 md:h-20 bg-[#15192b] rounded-full border-[3px] border-white flex items-center justify-center shadow-lg mb-2 md:mb-3 z-10 relative hover:scale-105 transition-transform">
                              <span class="text-sm md:text-2xl font-bold text-white">${initials}</span>
+                             ${badgeHTML}
                         </div>
 
                         <div class="mb-1 md:mb-2 text-center relative z-0 w-full">
@@ -473,7 +506,8 @@
                         </div>
 
                         <div class="w-full ${cfg.color} ${cfg.height} rounded-t-lg flex items-center justify-center shadow-lg border-b-0 border-x-0 border-t-4 ${cfg.border} relative overflow-hidden">
-                            <!-- Clean bar without numbers -->
+                            <!-- Visual Medal Icon on Bar -->
+                            <i class="fas ${cfg.rank===1 ? 'fa-trophy' : 'fa-medal'} text-white/20 text-3xl md:text-5xl mt-2 relative z-10"></i>
                         </div>
                     </div>
                 </div>`;
